@@ -31,7 +31,7 @@ def create_board():
     return board
 
 # To drop/put/mark our selected position
-
+#hfbfhdjfnskfddfj
 
 def drop_piece(board, row, col, piece):
     board[row][col] = piece
