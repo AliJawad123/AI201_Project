@@ -23,6 +23,18 @@ player_piece = 1
 ai_piece = 2
 window_length = 4
 
+#############################################
+# variables related to setting game windows #
+#############################################
+squaresize= 100
+radius = int(squaresize/ 2 - 5)
+
+width = columns* squaresize
+height = (rows + 1) * squaresize
+size = (width, height)
+###############################################
+
+
 # To create game board
 
 
@@ -81,8 +93,31 @@ def winning_move(board, piece):
     	    if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
     		    return True
 
-    # # Check positively sloped diaganols
-    # for c in range(COLUMN_COUNT-3):
-    # 	for r in range(ROW_COUNT-3):
-    # 		if board[r][c] == piece and board[r+1][c+1] == piece and board[r+2][c+2] == piece and board[r+3][c+3] == piece:
-    # 			return True
+def draw_board(board):
+    for c in range(columns):
+        for r in range(rows):
+            pygame.draw.rect(screen, blue, (c * squaresize, r * squaresize + squaresize, squaresize, squaresize))
+            pygame.draw.circle(screen, black, (
+            int(c * squaresize + squaresize / 2), int(r * squaresize + squaresize + squaresize / 2)), radius)
+
+    for c in range(columns):
+        for r in range(rows):
+            if board[r][c] == player_piece:
+                pygame.draw.circle(screen, red, (
+                int(c * squaresize + squaresize / 2), height - int(r * squaresize + squaresize / 2)), radius)
+            elif board[r][c] == ai_piece:
+                pygame.draw.circle(screen, yellow, (
+                int(c * squaresize + squaresize / 2), height - int(r * squaresize + squaresize / 2)), radius)
+    pygame.display.update()
+
+
+board = create_board()
+print_board(board)
+
+pygame.init()
+
+screen = pygame.display.set_mode(size)
+draw_board(board)
+pygame.display.update()
+
+
