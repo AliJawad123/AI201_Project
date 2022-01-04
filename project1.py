@@ -26,10 +26,10 @@ ai_piece = 2
 # variables related to setting game windows #
 #############################################
 window_length = 4
-squaresize= 100
-radius = int(squaresize/ 2 - 5)
+squaresize = 100
+radius = int(squaresize / 2 - 5)
 
-width = columns* squaresize
+width = columns * squaresize
 height = (rows + 1) * squaresize
 size = (width, height)
 ###############################################
@@ -64,6 +64,7 @@ def get_next_open_position(board, col):
 
 # Printing the board by flipping it along 0-axis
 
+
 def get_next_open_row(board, col):
     for r in range(rows):
         if board[r][col] == 0:
@@ -95,25 +96,53 @@ def winning_move(board, piece):
     # Checking negative sloped diagonals
     for c in range(columns-3):
         for r in range(3, rows):
-    	    if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
-    		    return True
+            if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
+                return True
+
 
 def draw_board(board):
     for c in range(columns):
         for r in range(rows):
-            pygame.draw.rect(screen, blue, (c * squaresize, r * squaresize + squaresize, squaresize, squaresize))
+            pygame.draw.rect(screen, blue, (c * squaresize, r *
+                             squaresize + squaresize, squaresize, squaresize))
             pygame.draw.circle(screen, black, (
-            int(c * squaresize + squaresize / 2), int(r * squaresize + squaresize + squaresize / 2)), radius)
+                int(c * squaresize + squaresize / 2), int(r * squaresize + squaresize + squaresize / 2)), radius)
 
     for c in range(columns):
         for r in range(rows):
             if board[r][c] == player_piece:
                 pygame.draw.circle(screen, red, (
-                int(c * squaresize + squaresize / 2), height - int(r * squaresize + squaresize / 2)), radius)
+                    int(c * squaresize + squaresize / 2), height - int(r * squaresize + squaresize / 2)), radius)
             elif board[r][c] == ai_piece:
                 pygame.draw.circle(screen, yellow, (
-                int(c * squaresize + squaresize / 2), height - int(r * squaresize + squaresize / 2)), radius)
+                    int(c * squaresize + squaresize / 2), height - int(r * squaresize + squaresize / 2)), radius)
     pygame.display.update()
+
+
+# rows or columns of current game state are given to this function and it will update the score of the possible move accordinly.
+def evaluate_window(window, piece):
+    # The opponent player is by default set as the user(player)
+    opponent_piece = player_piece
+
+    # If the position is being evaluated from the user(player's) point of view than the AI(minimax) is the opponent
+    if piece == player_piece:
+        opponent_piece = ai_piece
+    # Initial score is set to 0
+    score = 0
+
+    # If the positions are favourable increase the score variable
+    if window.count(piece) == 4:
+        score = score+100
+    elif window.count(piece) == 3 and window.count(0) == 1:
+        score = score+5
+    elif window.count(opponent_piece) == 2 and window.count(0) == 2:
+        score = score+2
+
+    # If the position is such as the opponent will be able to connect 3 dots then the score will be decreased
+    if window.count(opponent_piece) == 3 and window.count(0) == 1:
+        score = score - 4
+
+    return score
 
 
 board = create_board()
@@ -144,7 +173,8 @@ while not game_over:
             pygame.draw.rect(screen, black, (0, 0, width, squaresize))
             posx = event.pos[0]
             if turn == player:
-                pygame.draw.circle(screen, red, (posx, int(squaresize/ 2)), radius)
+                pygame.draw.circle(
+                    screen, red, (posx, int(squaresize / 2)), radius)
 
         pygame.display.update()
 
