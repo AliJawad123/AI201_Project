@@ -21,11 +21,11 @@ ai = 1
 empty = 0
 player_piece = 1
 ai_piece = 2
-window_length = 4
 
 #############################################
 # variables related to setting game windows #
 #############################################
+window_length = 4
 squaresize= 100
 radius = int(squaresize/ 2 - 5)
 
@@ -63,6 +63,11 @@ def get_next_open_position(board, col):
             return i
 
 # Printing the board by flipping it along 0-axis
+
+def get_next_open_row(board, col):
+    for r in range(rows):
+        if board[r][col] == 0:
+            return r
 
 
 def print_board(board):
@@ -113,6 +118,7 @@ def draw_board(board):
 
 board = create_board()
 print_board(board)
+game_over = False
 
 pygame.init()
 
@@ -120,4 +126,42 @@ screen = pygame.display.set_mode(size)
 draw_board(board)
 pygame.display.update()
 
+myfont = pygame.font.SysFont("monospace", 75)
 
+turn = random.randint(player, ai)
+
+###################################
+#         MAIN FUNCTION           #
+###################################
+
+while not game_over:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+
+        if event.type == pygame.MOUSEMOTION:
+            pygame.draw.rect(screen, black, (0, 0, width, squaresize))
+            posx = event.pos[0]
+            if turn == player:
+                pygame.draw.circle(screen, red, (posx, int(squaresize/ 2)), radius)
+
+        pygame.display.update()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pygame.draw.rect(screen, black, (0, 0, width, squaresize))
+            # print(event.pos)
+            # Ask for Player 1 Input
+            if turn == player:
+                posx = event.pos[0]
+                col = int(math.floor(posx / squaresize))
+
+                if is_valid_location(board, col):
+                    row = get_next_open_row(board, col)
+                    drop_piece(board, row, col, player_piece)
+
+                    turn += 1
+                    turn = turn % 2
+
+                    print_board(board)
+                    draw_board(board)
