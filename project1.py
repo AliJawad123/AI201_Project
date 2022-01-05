@@ -144,6 +144,37 @@ def evaluate_window(window, piece):
 
     return score
 
+# calculating the overall attractiveness of the board after one move has been made
+def score_position(board, piece):
+    score = 0
+    center_array = [int(i) for i in list[:, columns//2]]
+    center_count = center_array.count(piece)
+    score = score+center_count*6
+
+    for r in range(rows):
+        row_array = [int(i) for i in list(board[r, :])]
+        for c in range(columns - 3):
+            window = row_array[c:c + 4]
+            score += evaluate_window(window, piece)
+
+    for c in range(columns):
+        col_array = [int(i) for i in list(board[:, c])]
+        for r in range(rows-3):
+            window = col_array[r:r+4]
+            score += evaluate_window(window, piece)
+
+    for r in range(3, rows):
+        for c in range(columns - 3):
+            window = [board[r-i][c+i] for i in range(4)]
+            score += evaluate_window(window, piece)
+
+    for r in range(3, rows):
+        for c in range(3, columns):
+            window = [board[r-i][c-i] for i in range(4)]
+            score += evaluate_window(window, piece)
+
+    return score
+
 
 board = create_board()
 print_board(board)
