@@ -175,6 +175,31 @@ def score_position(board, piece):
 
     return score
 
+# Shows the column in which we can drop the piece
+
+def get_valid_locations(board):
+    valid_locations = []
+    for col in range(columns):
+        if is_valid_location(board, col):
+            valid_locations.append(col)
+    return valid_locations
+
+# Select the best move by searching the scores of each move
+
+def pick_best_move(board, piece):
+    valid_locations = get_valid_locations(board)
+    best_score = -10000
+    best_col = random.choice(valid_locations)
+    for col in valid_locations:
+        row = get_next_open_row(board, col)
+        temp_board = board.copy()
+        drop_piece(temp_board, row, col, piece)
+        score = score_position(temp_board, piece)
+        if score > best_score:
+            best_score = score
+            best_col = col
+
+    return best_col
 
 board = create_board()
 print_board(board)
@@ -226,3 +251,26 @@ while not game_over:
 
                     print_board(board)
                     draw_board(board)
+
+        if turn == ai and not game_over:
+
+            col = pick_best_move(board, ai_piece)
+
+            if is_valid_location(board, col):
+                # pygame.time.wait(500)
+                row = get_next_open_row(board, col)
+                drop_piece(board, row, col, ai_piece)
+
+                if winning_move(board, ai_piece):
+                    label = myfont.render("Player 2 wins!!", 1, yellow)
+                    screen.blit(label, (40, 10))
+                    game_over = True
+
+                print_board(board)
+                draw_board(board)
+
+                turn += 1
+                turn = turn % 2
+
+        if game_over:
+            pygame.time.wait(3000)
